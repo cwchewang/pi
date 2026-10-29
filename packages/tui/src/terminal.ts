@@ -65,7 +65,8 @@ export function normalizeNativeShiftEnterInput(
 	shouldDetectNativeShiftEnter: boolean,
 	isShiftPressed: boolean,
 ): string {
-	if (shouldDetectNativeShiftEnter && data === "\r" && isShiftPressed) return NATIVE_SHIFT_ENTER_SEQUENCE;
+	if (shouldDetectNativeShiftEnter && isShiftPressed && (data === "\r" || data === "\x1b\r"))
+		return NATIVE_SHIFT_ENTER_SEQUENCE;
 	return data;
 }
 
@@ -397,7 +398,8 @@ export class ProcessTerminal implements Terminal {
 	private forwardInputSequence(sequence: string): void {
 		if (!this.inputHandler) return;
 		const shouldDetectNativeShiftEnter =
-			sequence === "\r" && (isAppleTerminalSession() || process.platform === "win32");
+			(sequence === "\r" && (isAppleTerminalSession() || process.platform === "win32")) ||
+			(sequence === "\x1b\r" && isAppleTerminalSession());
 		const input = normalizeNativeShiftEnterInput(
 			sequence,
 			shouldDetectNativeShiftEnter,

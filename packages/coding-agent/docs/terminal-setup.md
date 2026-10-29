@@ -40,7 +40,7 @@ This is an iTerm2-wide setting and can also change native trackpad scrolling. Th
 
 ## Apple Terminal
 
-Pi enables enhanced key reporting when available. If Terminal.app still sends plain Return for `Shift+Enter`, Pi uses a local macOS modifier fallback and treats it as `Shift+Enter`.
+Pi enables enhanced key reporting when available. If Terminal.app sends plain Return or `ESC` followed by Return for `Shift+Enter`, Pi checks the local macOS Shift key state. Without Shift held, `ESC` followed by Return retains its `Alt+Enter` meaning.
 
 The fallback works only when Pi runs on the same Mac as Terminal.app. It cannot inspect the local modifier state when Pi runs on another machine over SSH.
 

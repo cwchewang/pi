@@ -36,6 +36,23 @@ describe("normalizeNativeShiftEnterInput", () => {
 		assert.equal(normalizeNativeShiftEnterInput("\r", true, true), "\x1b[13;2u");
 	});
 
+	it("normalizes ESC + Return when native Shift detection is enabled and Shift is held (#11559)", () => {
+		assert.equal(normalizeNativeShiftEnterInput("\x1b\r", true, true), "\x1b[13;2u");
+	});
+
+	it("preserves real Alt+Enter when Shift is not held (#11559)", () => {
+		assert.equal(normalizeNativeShiftEnterInput("\x1b\r", true, false), "\x1b\r");
+	});
+
+	it("leaves ESC + Return unchanged when native Shift detection is disabled (#11559)", () => {
+		assert.equal(normalizeNativeShiftEnterInput("\x1b\r", false, true), "\x1b\r");
+	});
+
+	it("does not reinterpret ESC + linefeed or standalone Escape (#11559)", () => {
+		assert.equal(normalizeNativeShiftEnterInput("\x1b\n", true, true), "\x1b\n");
+		assert.equal(normalizeNativeShiftEnterInput("\x1b", true, true), "\x1b");
+	});
+
 	it("leaves Return unchanged when native Shift detection is disabled", () => {
 		assert.equal(normalizeNativeShiftEnterInput("\r", false, true), "\r");
 	});
@@ -53,6 +70,18 @@ describe("normalizeNativeShiftEnterInput", () => {
 describe("normalizeAppleTerminalInput", () => {
 	it("rewrites Apple Terminal Return to CSI-u Shift+Enter when Shift is pressed", () => {
 		assert.equal(normalizeAppleTerminalInput("\r", true, true), "\x1b[13;2u");
+	});
+
+	it("normalizes Apple Terminal ESC + Return with physical Shift held (#11559)", () => {
+		assert.equal(normalizeAppleTerminalInput("\x1b\r", true, true), "\x1b[13;2u");
+	});
+
+	it("preserves Apple Terminal Alt+Enter without Shift (#11559)", () => {
+		assert.equal(normalizeAppleTerminalInput("\x1b\r", true, false), "\x1b\r");
+	});
+
+	it("does not rewrite ESC + Return outside Apple Terminal (#11559)", () => {
+		assert.equal(normalizeAppleTerminalInput("\x1b\r", false, true), "\x1b\r");
 	});
 
 	it("leaves Apple Terminal Return unchanged when Shift is not pressed", () => {
